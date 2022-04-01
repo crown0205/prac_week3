@@ -2,7 +2,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const Grid = props => {
+const Grid = (props) => {
   const { is_flex, width, margin, padding, bg, children } = props;
 
   const styles = {
@@ -36,8 +36,7 @@ const GirdBox = styled.div`
   ${props => (props.margin ? `margin:${props.margin};` : "")}
   ${props => (props.bg ? `background-color:${props.bg};` : "")}
   ${props =>
-    props.is_flex
-      ? `display: flex, align-items: center, justify-content: space-between;`
+    props.is_flex ? `display: flex, align-items: center, justify-content: space-between;`
       : ""}
 `;
 
