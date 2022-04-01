@@ -2,10 +2,11 @@ import React from "react";
 import styled from "styled-components";
 
 const Grid = props => {
-  const { is_flex, width, margin, padding, bg, children } = props;
+  const { is_flex, is_around, width, margin, padding, bg, children } = props;
 
   const styles = {
     is_flex: is_flex,
+    is_around: is_around,
     width: width,
     margin: margin,
     padding: padding,
@@ -37,6 +38,10 @@ const GridBox = styled.div`
   ${props =>
     props.is_flex
       ? `display: flex; align-items: center; justify-content: space-between; `
+      : ""}
+  ${props =>
+    props.is_around
+      ? `display: flex; align-items: center; justify-content: center; `
       : ""}
 `;
 
