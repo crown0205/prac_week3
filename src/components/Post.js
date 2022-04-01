@@ -5,6 +5,19 @@ const Post = props => {
     <React.Fragment>
       {/* 그리드, 텍스트, 버튼, 이미지 컴포넌트 만들꺼임 */}
       <Grid padding="16px">
+        <Grid id_flex>
+
+        </Grid>
+        <Grid padding="16px">
+
+        </Grid>
+        <Grid>
+
+        </Grid>
+        <Grid padding="16px">
+
+        </Grid>
+
         <div>user profile/ user name / insert_dt / </div>
         <div>contents</div>
         <div>image</div>
