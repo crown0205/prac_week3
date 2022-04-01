@@ -1,12 +1,14 @@
 import React from "react";
 import Grid from "../elements/Gird";
+import Image from "../elements/Image"
+
 const Post = props => {
   return (
     <React.Fragment>
       {/* 그리드, 텍스트, 버튼, 이미지 컴포넌트 만들꺼임 */}
       <Grid padding="16px">
         <Grid id_flex>
-
+          <Image shape="circle" src={props.src} />
         </Grid>
         <Grid padding="16px">
 
