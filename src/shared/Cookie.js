@@ -1,10 +1,10 @@
 const getCookie = name => {
-  console.log(name)
+  // console.log(name)
   let value = "; " + document.cookie;
-  console.log(value)
+  // console.log(value)
 
   let parts = value.split(`; ${name}=`);
-  console.log(parts)
+  // console.log(parts)
 
 
   if(parts.length === 2) {
