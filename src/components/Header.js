@@ -3,20 +3,14 @@ import { useHistory } from "react-router-dom";
 import { Grid, Text, Button } from "../elements/index";
 import { getCookie, deleteCookie } from "../shared/Cookie";
 
+import { useSelector, useDispatch } from "react-redux";
+import { actionCreators as userActions } from "../redux/modules/user";
+
 const Header = props => {
   const history = useHistory();
-  const [is_login, setIsLogin]  = React.useState(false)
+  const dispatch = useDispatch()
+  const is_login =useSelector((state)=> state.user.is_login)
 
-  React.useEffect(() => {
-    let cookie = getCookie("user_id")
-    console.log(cookie)
-
-    if(cookie) {
-      setIsLogin(true)
-    } else {
-      setIsLogin(false)
-    }
-  },[])
 
   if(is_login){
     return (
@@ -50,7 +44,7 @@ const Header = props => {
           fontW="600"
           text="로그아웃"
           _onClick={() => {
-            deleteCookie("user_id")
+            dispatch(userActions.logOut({}))
             history.push("/login");
           }}
         />
