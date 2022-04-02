@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 const Input = props => {
-  const { height } = props;
+  const { height, _onChange } = props;
 
   const styles = {
     height: height,
@@ -10,7 +10,11 @@ const Input = props => {
   return (
     <>
       <Label>{props.label}</Label>
-      <InputBox placeholder={props.placeholder} {...styles}></InputBox>
+      <InputBox
+        placeholder={props.placeholder}
+        onChange={_onChange}
+        {...styles}
+      ></InputBox>
     </>
   );
 };
@@ -21,6 +25,7 @@ Input.defaultProps = {
   height: "45px",
   padding: "18px 10px",
   margin: false,
+  _onChange: () => {},
 };
 
 const Label = styled.label`
