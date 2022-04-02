@@ -2,11 +2,16 @@ import React from "react";
 import { Text, Grid, Button, Input } from "../elements/index";
 import { getCookie, setCookie, deleteCookie } from "../shared/Cookie";
 
+import { useDispatch } from "react-redux";
+import { actionCreators as userActions } from "../redux/modules/user";
+
 const Login = props => {
+  const dispatch = useDispatch();
+
   const login = () => {
-    setCookie("user_id", "bingo", 3);
-    setCookie("user_pwd", "pppp", 3);
+    dispatch(userActions.loginAction({ user_name: "raraland" }));
   };
+
   return (
     <React.Fragment>
       <Grid padding="16px" textAlign="center">
