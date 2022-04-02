@@ -1,40 +1,34 @@
-import { createAction, handleAction } from "redux-actions";
-import { produce } from "immer";
+import { createStore, combineReducers, applyMiddleware, compose } from "redux";
+import thunk from "redux-thunk";
+import { createBrowserHistory } from "history";
+import { connectRouter } from "connected-react-router";
 
-import { setCookie, deleteCookie, getCookie } from "../shared/Cookie"
+import User from "./modules/user";
 
-//actions type
-const LOG_IN = "LOG_IN";
-const LOG_OUT = "LOG_OUT";
-const GET_USER = "GET_USER";
+const rootReducer = combineReducers({
+  user: User,
+});
 
-// action creators // 액션함수를 "redux-actions"이 패키지로 받아 편하게 바꿔준거다.
-const logIn = createAction(LOG_IN, user => ({ user }));
-const logOut = createAction(LOG_OUT, user => ({ user }));
-const getUser = createAction(GET_USER, user => ({ user }));
+const middlewares = [thunk];
 
-// initialState
-const initialState = {
-  user: null,
-  is_login: false,
-};
+// 지금이 어느 환경인 지 알려줘요. (개발환경, 프로덕션(배포)환경 ...)
+const env = process.env.NODE_ENV;
 
-// reducer
-export default handleAction({
-  [LOG_IN]: (state, action) => produce(state, (draft)=>{ // "draft"가 immer를 사용하여 불변성을 관리해주는 방법? 이다.
-    setCookie("is_login", "success"); // 원래는 토큰이 들어가야된다.
-    draft.user = action.payload.user;
-    draft.is_login = true;
-  }),
-  [LOG_OUT]: (state, action) => produce(state, (draft)=>{}),
-  [GET_USER]: (state, action) => produce(state, (draft)=>{}),
-}, initialState);
-
-//action creator export 액션생성함수를 export해줘야 다른곳에서 가져다 쓸수 있어서 해주는거다.
-const actionCreators = {
-  logIn,
-  logOut,
-  getUser,
+// 개발환경에서는 로거라는 걸 하나만 더 써볼게요.
+if (env === "development") {
+  const { logger } = require("redux-logger");
+  middlewares.push(logger);
 }
 
-export {actionCreators}
+const composeEnhancers =
+  typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+        // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
+      })
+    : compose;
+
+const enhancer = composeEnhancers(applyMiddleware(...middlewares));
+
+let store = initialStore => createStore(rootReducer, enhancer);
+
+export default store();
