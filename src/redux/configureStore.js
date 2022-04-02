@@ -21,7 +21,7 @@ const initialState = {
 
 // reducer
 export default handleAction({
-  [LOG_IN]: (state, action) => produce(state, (draft)=>{
+  [LOG_IN]: (state, action) => produce(state, (draft)=>{ // "draft"가 immer를 사용하여 불변성을 관리해주는 방법? 이다.
     setCookie("is_login", "success"); // 원래는 토큰이 들어가야된다.
     draft.user = action.payload.user;
     draft.is_login = true;
@@ -30,11 +30,11 @@ export default handleAction({
   [GET_USER]: (state, action) => produce(state, (draft)=>{}),
 }, initialState);
 
-//action creator export
-const actionCroeators = {
+//action creator export 액션생성함수를 export해줘야 다른곳에서 가져다 쓸수 있어서 해주는거다.
+const actionCreators = {
   logIn,
   logOut,
   getUser,
 }
 
-export {actionCroeators}
+export {actionCreators}
