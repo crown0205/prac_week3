@@ -41,14 +41,19 @@ const signupFB = (id, pwd, user_name) => {
       .createUserWithEmailAndPassword(id, pwd)
       .then(user => {
         console.log(user);
-        auth.currentUser.updateProfile({
-          displayName: user_name,
-        }).then(()=>{
-          dispatch(setUser({user_name: user_name, id: id, user_profile:""}))
-          history.push("/")
-        }).catch((error)=>{
-          console.log(error)
-        })
+        auth.currentUser
+          .updateProfile({
+            displayName: user_name,
+          })
+          .then(() => {
+            dispatch(
+              setUser({ user_name: user_name, id: id, user_profile: "" })
+            );
+            history.push("/");
+          })
+          .catch(error => {
+            console.log(error);
+          });
 
         // Signed in
         // ...
