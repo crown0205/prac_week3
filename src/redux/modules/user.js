@@ -27,11 +27,29 @@ const initialState = {
 // }
 
 //middleware actions
-const loginAction = user => {
+const loginFB = (id, pwd) => {
   return function (dispatch, getState, { history }) {
-    console.log(history);
-    dispatch(setUser(user));
-    history.push("/");
+    auth
+      .signInWithEmailAndPassword(id, pwd)
+      .then(user => {
+        console.log(user);
+        console.log("로그인함?");
+        // auth.currentUser // <== "auth" 여기에도 유저의 정보는 들어가있다.
+
+        dispatch(
+          setUser({
+            user_name: user.user.displayName,
+            id: id,
+            user_profile: "",
+          })
+        );
+
+        history.push("/")
+      })
+      .catch(error => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+      });
   };
 };
 
@@ -93,8 +111,8 @@ export default handleActions(
 const actionCreators = {
   logOut,
   getUser,
-  loginAction,
   signupFB,
+  loginFB,
 };
 
 export { actionCreators };
