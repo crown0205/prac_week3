@@ -10,7 +10,8 @@ import Signup from "../pages/Signup";
 import Login from "../pages/Login";
 
 import Header from "../components/Header";
-import { Grid } from "../elements/index";
+import { Grid, Button } from "../elements/index";
+import Permit from "./Permit";
 
 import { useDispatch } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
@@ -29,14 +30,17 @@ function App() {
 
   return (
     <React.Fragment>
-      <ConnectedRouter history={history}>
-        <Grid>
+      <Grid>
+        <ConnectedRouter history={history}>
           <Header></Header>
           <Route path="/" exact component={PostList} />
           <Route path="/login" exact component={Login} />
           <Route path="/signup" exact component={Signup} />
-        </Grid>
-      </ConnectedRouter>
+        </ConnectedRouter>
+      </Grid>
+      <Permit>
+        <Button is_float text="+"></Button>
+      </Permit>
     </React.Fragment>
   );
 }
