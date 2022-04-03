@@ -6,18 +6,18 @@ const Post = props => {
     <React.Fragment>
       {/* 그리드, 텍스트, 버튼, 이미지 컴포넌트 만들꺼임 */}
       <Grid padding="16px">
-        <Grid is_flex>
+        <Grid is_flex width="auto">
           <Image shape="circle" src={props.user_info.user_profile} />
           <Text bold>{props.user_info.user_name}</Text>
           <Text>{props.insert_dt}</Text>
         </Grid>
-        <Grid padding="16px">
-          <Text>{props.contents}</Text>
-        </Grid>
-        <Grid>
+        <Grid margin="16px 0 0 0">
           <Image shape="rectangle" src={props.image_url} />
         </Grid>
-        <Grid padding="16px">
+        <Grid is_flex width="auto" padding="16px">  
+          <Text>{props.contents}</Text>
+        </Grid>
+        <Grid padding="0 16px 16px">
           <Text bold>댓글 {props.comment_cnt}개</Text>
         </Grid>
 

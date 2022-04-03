@@ -1,4 +1,4 @@
-import React, { Children } from "react";
+import React from "react"; 
 import { useSelector } from "react-redux";
 import { apiKey } from "./firebase";
 
@@ -9,7 +9,6 @@ const Permit = props => {
 
   const is_session = sessionStorage.getItem(_session_key) ? true : false;
 
-  console.log(props)
   if (is_session && is_login) {
     return <React.Fragment>{props.children}</React.Fragment>;
   }

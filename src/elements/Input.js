@@ -1,21 +1,26 @@
 import React from "react";
 import styled from "styled-components";
 
+import { Text, Grid } from "./index";
+
 const Input = props => {
-  const { height, _onChange, type } = props;
+  const { height, _onChange, type, placeholder, label } = props;
 
   const styles = {
     height: height,
   };
+
   return (
     <>
-      <Label>{props.label}</Label>
-      <InputBox
-        type={type}
-        placeholder={props.placeholder}
-        onChange={_onChange}
-        {...styles}
-      ></InputBox>
+      <Grid>
+        <Label>{label}</Label>
+        <InputBox
+          type={type}
+          placeholder={placeholder}
+          onChange={_onChange}
+          {...styles}
+        ></InputBox>
+      </Grid>
     </>
   );
 };
@@ -23,11 +28,10 @@ const Input = props => {
 Input.defaultProps = {
   children: null,
   type: "text",
-  width: "100%",
-  height: "45px",
-  padding: "18px 10px",
-  margin: false,
   _onChange: () => {},
+  height: "45px",
+  // padding: "18px 16px",
+  margin: false,
 };
 
 const Label = styled.label`

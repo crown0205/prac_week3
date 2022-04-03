@@ -45,19 +45,12 @@ const Login = props => {
             height="40px"
             _onChange={e => {
               setPwd(e.target.value);
-              // console.log(e.target.value)
             }}
           />
         </Grid>
 
         <Button
           text="로그인하기"
-          width="100%"
-          height="50px"
-          border="none"
-          bg="black"
-          color="#fff"
-          fontW="600"
           margin="50px 0px"
           _onClick={() => {
             console.log("로그인 버튼 누름");

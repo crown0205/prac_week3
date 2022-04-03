@@ -2,48 +2,44 @@ import React from "react";
 import styled from "styled-components";
 
 const Button = props => {
-  const { fontW, width, height, margin, bg, color, border, is_float } = props;
+  const { text, _onClick, is_float, children, margin, width } = props;
 
   const styles = {
-    width: width,
-    height: height,
     margin: margin,
-    fontW: fontW,
-    bg: bg,
-    color: color,
-    border: border,
+    width: width,
   };
 
   if (is_float) {
     return (
       <React.Fragment>
-        <FloatButton onClick={props._onClick}>{props.text}</FloatButton>
+        <FloatButton onClick={_onClick}>{text ? text : children}</FloatButton>
       </React.Fragment>
     );
   }
 
   return (
-    <ButtonBox {...styles} onClick={props._onClick}>
-      {props.text}
+    <ButtonBox {...styles} onClick={_onClick}>
+      {text ? text : children}
     </ButtonBox>
   );
 };
 
 Button.defaultProps = {
+  text: false,
   children: null,
   is_float: false,
-  width: "40%",
-  height: "30px",
+  _onClick: () => {},
+  width: "100%",
 };
 
 const ButtonBox = styled.button`
-  color: ${props => props.color};
   width: ${props => props.width};
-  height: ${props => props.height};
-  font-weight: ${props => props.fontW};
-  ${props => (props.bg ? `background: ${props.bg};` : "")}
+  background-color: #212121;
+  color: #fff;
+  padding: 12px 0px;
+  box-sizing: border-box;
+  border: none;
   ${props => (props.margin ? `margin: ${props.margin};` : "")}
-  ${props => (props.border ? `border: ${props.border};` : "")}
 `;
 
 const FloatButton = styled.button`
@@ -56,7 +52,7 @@ const FloatButton = styled.button`
   font-weight: 800;
   position: fixed;
   bottom: 50px;
-  right: 50px;
+  right: 16px;
   text-align: center;
   vertical-align: middle;
   border: none;
