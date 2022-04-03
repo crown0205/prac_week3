@@ -98,21 +98,32 @@ const signupFB = (id, pwd, user_name) => {
 };
 
 const loginCheckFB = () => {
-  return function (dispatch, getState, {history}){
-    auth.onAuthStateChanged((user) => {
-      if(user){
-        dispatch(setUser({
-          user_name: user.displayName,
-          user_profile:"",
-          id: user.email,
-          uid: user.uid,
-        }))
+  return function (dispatch, getState, { history }) {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        dispatch(
+          setUser({
+            user_name: user.displayName,
+            user_profile: "",
+            id: user.email,
+            uid: user.uid,
+          })
+        );
       } else {
-        dispatch(logOut())
+        dispatch(logOut());
       }
-    })
-  }
-}
+    });
+  };
+};
+
+const logOutFB = () => {
+  return function (dispatch, getState, { history }) {
+    auth.signOut().then(() => {
+      dispatch(logOut());
+      history.replace("/");
+    });
+  };
+};
 
 // reducer
 export default handleActions(
@@ -142,6 +153,7 @@ const actionCreators = {
   signupFB,
   loginFB,
   loginCheckFB,
+  logOutFB,
 };
 
 export { actionCreators };

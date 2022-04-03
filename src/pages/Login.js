@@ -4,16 +4,16 @@ import { getCookie, setCookie, deleteCookie } from "../shared/Cookie";
 
 import { useDispatch } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
-                          // userActions 이거는 그냥 내가 이해하기 쉽게 별명을 붙이는 방법이다.
+// userActions 이거는 그냥 내가 이해하기 쉽게 별명을 붙이는 방법이다.
 const Login = props => {
   const dispatch = useDispatch();
 
-  const [id, setId] = React.useState("")
-  const [pwd, setPwd] = React.useState("")
+  const [id, setId] = React.useState("");
+  const [pwd, setPwd] = React.useState("");
 
   const login = () => {
-    if(id === "" || pwd === "") {
-      window.alert("입력란이 비어있습니다~~!")
+    if (id === "" || pwd === "") {
+      window.alert("입력란이 비어있습니다~~!");
       return;
     }
     dispatch(userActions.loginFB(id, pwd));
@@ -31,8 +31,8 @@ const Login = props => {
             label="아이디"
             placeholder="아이디를 입력해주세요."
             height="40px"
-            _onChange={(e)=>{
-              setId(e.target.value)
+            _onChange={e => {
+              setId(e.target.value);
             }}
           />
         </Grid>
@@ -43,8 +43,8 @@ const Login = props => {
             type="password"
             placeholder="패스워드 입력해주세요."
             height="40px"
-            _onChange={(e)=>{
-              setPwd(e.target.value)
+            _onChange={e => {
+              setPwd(e.target.value);
               // console.log(e.target.value)
             }}
           />

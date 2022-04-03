@@ -12,11 +12,10 @@ const Header = props => {
   const dispatch = useDispatch();
   const is_login = useSelector(state => state.user.is_login);
 
-  const _session_key = `firebase:authUser:${apiKey}:[DEFAULT]` 
+  const _session_key = `firebase:authUser:${apiKey}:[DEFAULT]`;
 
-  const is_session = sessionStorage.getItem(_session_key)? true : false;
+  const is_session = sessionStorage.getItem(_session_key) ? true : false;
   // console.log(is_session)
-
 
   if (is_login && is_session) {
     return (
@@ -54,8 +53,7 @@ const Header = props => {
             fontW="600"
             text="로그아웃"
             _onClick={() => {
-              dispatch(userActions.logOut({}));
-              history.push("/login");
+              dispatch(userActions.logOutFB());
             }}
           />
         </Grid>
