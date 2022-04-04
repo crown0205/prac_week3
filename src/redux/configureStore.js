@@ -4,13 +4,16 @@ import { createBrowserHistory } from "history";
 import { connectRouter } from "connected-react-router";
 
 import User from "./modules/user";
-import Post from "./modules/post";  // <== post 모듈 불러오기.
+import Post from "./modules/post"; 
+import Image from "./modules/image" 
+
 
 export const history =createBrowserHistory();
 
 const rootReducer = combineReducers({
   user: User,
-  post: Post, // Post 모듈 쓸려면 만들어여 rootReducer로 묶어줘야 된다.
+  post: Post, 
+  image: Image, // <== 이미지 리듀서도 같이 묶어줌!!
   router: connectRouter(history),
 });
 
