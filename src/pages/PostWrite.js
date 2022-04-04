@@ -4,19 +4,34 @@ import Upload from "../shared/Upload";
 
 import { useSelector, useDispatch } from "react-redux";
 const PostWrite = props => {
-  const is_login = useSelector((state)=> state.user.is_login)
-  const {history} = props;
+  const is_login = useSelector(state => state.user.is_login);
+  const { history } = props;
 
-  if(!is_login){
+  const [contents, setContents] = React.useState("");
+
+  const changeContents = e => {
+    setContents(e.target.value);
+  };
+
+  if (!is_login) {
     return (
       <Grid padding="16px" margin="100px 0" center>
-        <Text bold size="32px">앗! 잠깐!! 멈춰봐!!!</Text>
-        <Text bold size="16px">로그인 후에만 글을 쓸수 있다구~!</Text>
-        <Button _onClick={()=>{
-          history.replace("/")
-        }} text="로그인하러가기!" margin="50px 0 0 0" width="80%"/>
+        <Text bold size="32px">
+          앗! 잠깐!! 멈춰봐!!!
+        </Text>
+        <Text bold size="16px">
+          로그인 후에만 글을 쓸수 있다구~!
+        </Text>
+        <Button
+          _onClick={() => {
+            history.replace("/");
+          }}
+          text="로그인하러가기!"
+          margin="50px 0 0 0"
+          width="80%"
+        />
       </Grid>
-    )
+    );
   }
   return (
     <React.Fragment>
@@ -36,7 +51,11 @@ const PostWrite = props => {
       </Grid>
 
       <Grid padding="16px">
-        <Input label="게시글 내용" placeholder="게시글 작성" />
+        <Input
+          label="게시글 내용"
+          placeholder="게시글 작성"
+          _onChange={changeContents}
+        />
       </Grid>
 
       <Grid padding="16px">
@@ -47,4 +66,3 @@ const PostWrite = props => {
 };
 
 export default PostWrite;
-
