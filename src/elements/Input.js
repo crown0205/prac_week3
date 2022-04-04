@@ -4,10 +4,11 @@ import styled from "styled-components";
 import { Text, Grid } from "./index";
 
 const Input = props => {
-  const { height, _onChange, type, placeholder, label } = props;
+  const { width, height, _onChange, type, placeholder, label } = props;
 
   const styles = {
     height: height,
+    width: width,
   };
 
   return (
@@ -40,7 +41,7 @@ const Label = styled.label`
 
 const InputBox = styled.input`
   display: inline-block;
-  width: 100%;
+  width: ${props => props.width};
   margin: auto;
   height: ${props => props.height};
   font-size: 16px;

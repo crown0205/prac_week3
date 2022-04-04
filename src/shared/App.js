@@ -5,9 +5,11 @@ import { Route } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import { history } from "../redux/configureStore";
 
-import PostList from "../pages/PostList";
 import Signup from "../pages/Signup";
 import Login from "../pages/Login";
+import PostList from "../pages/PostList";
+import PostWrite from "../pages/PostWrite";
+import PostDetail from "../pages/PostDetail"
 
 import Header from "../components/Header";
 import { Grid, Button } from "../elements/index";
@@ -36,6 +38,8 @@ function App() {
           <Route path="/" exact component={PostList} />
           <Route path="/login" exact component={Login} />
           <Route path="/signup" exact component={Signup} />
+          <Route path="/write" exact component={PostWrite} />
+          <Route path="/post/:id" exact component={PostDetail} />
         </ConnectedRouter>
       </Grid>
       <Permit>
