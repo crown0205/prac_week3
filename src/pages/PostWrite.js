@@ -3,14 +3,21 @@ import { Grid, Text, Button, Image, Input } from "../elements";
 import Upload from "../shared/Upload";
 
 import { useSelector, useDispatch } from "react-redux";
+import { actionCreators } from "../redux/modules/post";
+
 const PostWrite = props => {
   const is_login = useSelector(state => state.user.is_login);
+  const dispatch = useDispatch();
   const { history } = props;
 
   const [contents, setContents] = React.useState("");
 
   const changeContents = e => {
     setContents(e.target.value);
+  };
+
+  const addPost = () => {
+    dispatch(actionCreators.addPostFB(contents));
   };
 
   if (!is_login) {
@@ -59,7 +66,7 @@ const PostWrite = props => {
       </Grid>
 
       <Grid padding="16px">
-        <Button text="게시글 작성" />
+        <Button text="게시글 작성" _onClick={addPost} />
       </Grid>
     </React.Fragment>
   );

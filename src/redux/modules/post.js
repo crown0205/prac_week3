@@ -1,5 +1,6 @@
 import { produce } from "immer";
 import { createAction, handleActions } from "redux-actions";
+import moment from "moment";
 
 import { db } from "../../shared/firebase";
 
@@ -16,17 +17,48 @@ const initialState = {
 };
 
 const initialPost = {
-  id: 0,
-  user_info: {
-    user_name: "bingi",
-    user_profile:
-      "https://i.pinimg.com/564x/6d/45/81/6d45817cbb8691cb1ce4e2c3b2357c65.jpg",
-  },
+  // id: 0,
+  // user_info: {
+  //   user_name: "bingi",
+  //   user_profile:
+  //     "https://i.pinimg.com/564x/6d/45/81/6d45817cbb8691cb1ce4e2c3b2357c65.jpg",
+  // },
   image_url:
     "https://i.pinimg.com/564x/a2/fa/50/a2fa50e5c6eb5e3324c90b7f044c597e.jpg",
-  contents: "여기 콘텐츠 다아아아~~!!",
-  comment_cnt: 10,
-  insert_dt: "2022-03-31 12:14:32",
+  contents: "",
+  comment_cnt: 0,
+  insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
+};
+
+const addPostFB = (contents = "") => {
+  return function (dispatch, getState, { history }) {
+    const postDB = db.collection("post");
+    const _user = getState().user.user;
+
+    const user_info = {
+      user_name: _user.user_name,
+      user_id: _user.uid,
+      user_profile: _user.user_profile,
+    };
+
+    const _post = {
+      ...initialPost,
+      contents: contents,
+      insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
+    };
+
+    console.log("addPostFB 데이더 저장중!!!!")
+    // return;  // 리턴을 하면 밑에 정보는 작동을 안한다.
+                                                        // 위에 id값이 없어서 .then의 doc에서 값을 가져온다.
+    postDB.add({...user_info, ..._post}).then((doc)=> { //.then 하고 들어오는 정보에는 doc 정보에는 추가된 게시물 정보에는 id가 들어온다!!
+
+      let post = {user_info, ...post, id:doc.id};
+      dispatch(addPost(post));
+      history.replace("/");
+    }).catch((err)=>{
+      console.log("post 작성에 실패했어요...ㅜㅜ", err);
+    })
+  };
 };
 
 const getPostFB = () => {
@@ -79,7 +111,7 @@ const getPostFB = () => {
           // post_list.push(post);
         });
 
-        console.log("post_list : ",post_list);
+        console.log("post_list : ", post_list);
 
         dispatch(setPost(post_list));
       });
@@ -93,7 +125,9 @@ export default handleActions(
       produce(state, draft => {
         draft.list = action.payload.post_list;
       }),
-    [ADD_POST]: (state, action) => produce(state, draft => {}),
+    [ADD_POST]: (state, action) => produce(state, draft => {
+      draft.list.unshift(action.payload.post) // 배열의 맨앞에 붙이기 위해 unshift를 사용함. immer 때문에 불변성 신경 안쓰고 함수사용한다...!??
+    }),
   },
   initialState
 );
@@ -102,6 +136,7 @@ const actionCreators = {
   getPostFB,
   setPost,
   addPost,
+  addPostFB,
 };
 
 export { actionCreators };
