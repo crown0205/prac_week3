@@ -54,8 +54,9 @@ const addPostFB = (contents = "") => {
 
       let post = {user_info, ...post, id:doc.id};
       dispatch(addPost(post));
-      history.replace("/");
-    }).catch((err)=>{
+    })
+    .catch((err)=>{
+      history.push("/");
       console.log("post 작성에 실패했어요...ㅜㅜ", err);
     })
   };

@@ -18,6 +18,7 @@ const PostWrite = props => {
 
   const addPost = () => {
     dispatch(actionCreators.addPostFB(contents));
+    // history.push("/")
   };
 
   if (!is_login) {
