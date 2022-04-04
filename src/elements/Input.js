@@ -41,7 +41,7 @@ const Label = styled.label`
 
 const InputBox = styled.input`
   display: inline-block;
-  width: ${props => props.width};
+  width: ${props => (props.width ? props.width : "100%")};
   margin: auto;
   height: ${props => props.height};
   font-size: 16px;

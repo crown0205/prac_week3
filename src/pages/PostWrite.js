@@ -2,7 +2,22 @@ import React from "react";
 import { Grid, Text, Button, Image, Input } from "../elements";
 import Upload from "../shared/Upload";
 
+import { useSelector, useDispatch } from "react-redux";
 const PostWrite = props => {
+  const is_login = useSelector((state)=> state.user.is_login)
+  const {history} = props;
+
+  if(!is_login){
+    return (
+      <Grid padding="16px" margin="100px 0" center>
+        <Text bold size="32px">앗! 잠깐!! 멈춰봐!!!</Text>
+        <Text bold size="16px">로그인 후에만 글을 쓸수 있다구~!</Text>
+        <Button _onClick={()=>{
+          history.replace("/")
+        }} text="로그인하러가기!" margin="50px 0 0 0" width="80%"/>
+      </Grid>
+    )
+  }
   return (
     <React.Fragment>
       <Grid padding="20px 16px 0">
@@ -32,3 +47,4 @@ const PostWrite = props => {
 };
 
 export default PostWrite;
+
