@@ -1,17 +1,21 @@
-import { createAction, handleActions } from "redux-actions";
 import { produce } from "immer";
+import { createAction, handleActions } from "redux-actions";
+
+import { db } from "../../shared/firebase";
 
 const SET_POST = "SET_POST";
+const GET_POST = "GET_POST";
 const ADD_POST = "ADD_POST";
 
 const setPost = createAction(SET_POST, post_list => ({ post_list }));
+const getPost = createAction(GET_POST, post_list => ({ post_list }));
 const addPost = createAction(ADD_POST, post => ({ post }));
 
 const initialState = {
   list: [],
 };
 
-const initialPost = {   // <== 기본 폼으로 정의해주기 
+const initialPost = {
   id: 0,
   user_info: {
     user_name: "bingi",
@@ -25,6 +29,19 @@ const initialPost = {   // <== 기본 폼으로 정의해주기
   insert_dt: "2022-03-31 12:14:32",
 };
 
+const getPostFB = () => {
+  return function (dispatch, getState, { history }) {
+    const postDB = db
+      .collection("post")
+      .get()
+      .then(docs => {
+        docs.forEach(doc => {
+          console.log(doc.id, " => ", doc.data());
+        });
+      });
+  };
+};
+
 //reducer
 export default handleActions(
   {
@@ -35,6 +52,7 @@ export default handleActions(
 );
 
 const actionCreators = {
+  getPostFB,
   setPost,
   addPost,
 };

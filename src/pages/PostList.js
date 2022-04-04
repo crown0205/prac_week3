@@ -1,11 +1,19 @@
 // PostList.js
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import Post from "../components/Post";
+import { actionCreators as postActions } from "../redux/modules/post";
 
 const PostList = props => {
+  const dispatch = useDispatch();
   const post_list = useSelector(state => state.post.list); //리덕스에서 값을 받아와서 map으로 돌려 item이 있는 만큼 출력해준다. 지금은 빈배열만 있어서 빈화면만 나온다.
+
+  console.log(post_list);
+
+  React.useEffect(() => {
+    dispatch(postActions.getPostFB())
+  }, []);
 
   return (
     <React.Fragment>
