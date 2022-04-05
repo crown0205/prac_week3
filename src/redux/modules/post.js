@@ -151,54 +151,85 @@ const addPostFB = (contents = "") => {
 
 const getPostFB = () => {
   return function (dispatch, getState, { history }) {
-    const postDB = db
-      .collection("post")
-      .get()
-      .then(docs => {
-        let post_list = [];
-        docs.forEach(doc => {
-          //어려운 버전
-          let _post = doc.data();
+    const postDB = db.collection("post");
+                                                      // "orderBy" 사용
+    // let query = postDB.orderBy("insert_dt").limit(2); // 이렇게 해주면 db에서 갯수를 제한하여 가져오는 방법이다.
+                                // ⬆ 이 요소를 기준으로 정렬을 할수있다.
+    let query = postDB.orderBy("insert_dt","desc").limit(2);
 
-          // ['comment_cnt', 'contents', ...]
-          let post = Object.keys(_post).reduce(
-            (acc, cur) => {
-              if (cur.indexOf("user_") !== -1) {
-                return {
-                  ...acc,
-                  user_info: { ...acc.user_info, [cur]: _post[cur] },
-                };
-              }
-              return { ...acc, [cur]: _post[cur] };
-            },
-            { id: doc.id, user_info: {} }
-          );
+    query.get().then(docs => {
+      let post_list = [];
+      docs.forEach(doc => {
+        //어려운 버전
+        let _post = doc.data();
 
-          post_list.push(post);
+        // ['comment_cnt', 'contents', ...]
+        let post = Object.keys(_post).reduce(
+          (acc, cur) => {
+            if (cur.indexOf("user_") !== -1) {
+              return {
+                ...acc,
+                user_info: { ...acc.user_info, [cur]: _post[cur] },
+              };
+            }
+            return { ...acc, [cur]: _post[cur] };
+          },
+          { id: doc.id, user_info: {} }
+        );
 
-          // 쉬운버전
-          // let _post = {
-          //   id: doc.id,
-          //   ...doc.data(),
-          // };
-
-          // let post = {
-          //   id: doc.id,
-          //   user_info: {
-          //     user_name: _post.user_name,
-          //     user_profile: _post.user_profile,
-          //   },
-          //   image_url: _post.image_url,
-          //   contents: _post.contents,
-          //   comment_cnt: _post.comment_cnt,
-          //   insert_dt: _post.insert_dt,
-          // };
-
-          // post_list.push(post);
-        });
-
-        dispatch(setPost(post_list));
+        post_list.push(post);
       });
+
+      dispatch(setPost(post_list));
+    });
+
+    return;
+
+    postDB.get().then(docs => {
+      let post_list = [];
+      docs.forEach(doc => {
+        //어려운 버전
+        let _post = doc.data();
+
+        // ['comment_cnt', 'contents', ...]
+        let post = Object.keys(_post).reduce(
+          (acc, cur) => {
+            if (cur.indexOf("user_") !== -1) {
+              return {
+                ...acc,
+                user_info: { ...acc.user_info, [cur]: _post[cur] },
+              };
+            }
+            return { ...acc, [cur]: _post[cur] };
+          },
+          { id: doc.id, user_info: {} }
+        );
+
+        post_list.push(post);
+
+        // 쉬운버전
+        // let _post = {
+        //   id: doc.id,
+        //   ...doc.data(),
+        // };
+
+        // let post = {
+        //   id: doc.id,
+        //   user_info: {
+        //     user_name: _post.user_name,
+        //     user_profile: _post.user_profile,
+        //   },
+        //   image_url: _post.image_url,
+        //   contents: _post.contents,
+        //   comment_cnt: _post.comment_cnt,
+        //   insert_dt: _post.insert_dt,
+        // };
+
+        // post_list.push(post);
+      });
+
+      dispatch(setPost(post_list));
+    });
   };
 };
 
