@@ -95,7 +95,6 @@ const getPostFB = () => {
       .then(docs => {
         let post_list = [];
         docs.forEach(doc => {
-          console.log(doc.id, " => ", doc.data());
 
           //어려운 버전
           let _post = doc.data();
@@ -136,8 +135,6 @@ const getPostFB = () => {
 
           // post_list.push(post);
         });
-
-        console.log("post_list : ", post_list);
 
         dispatch(setPost(post_list));
       });
