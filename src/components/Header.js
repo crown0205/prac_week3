@@ -47,7 +47,7 @@ const Header = props => {
               fontW="600"
               text="알림"
               _onClick={() => {
-                history.push("/signup");
+                history.push("/noti");
               }}
             />
             <Button
