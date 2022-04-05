@@ -42,7 +42,7 @@ const Upload = props => {
         ref={fileInput}
         disabled={is_uploading}
       />
-      <Button text="업로드하기" _onClick={uploadFB} />
+      {/* <Button text="업로드하기" _onClick={uploadFB} /> */}
     </React.Fragment>
   );
 };
