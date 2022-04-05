@@ -6,12 +6,15 @@ import { db, storage } from "../../shared/firebase";
 import { actionCreators as imageAction } from "./image";
 
 const SET_POST = "SET_POST";
-const GET_POST = "GET_POST";
 const ADD_POST = "ADD_POST";
+const EDIT_POST = "EDIT_POST";
 
 const setPost = createAction(SET_POST, post_list => ({ post_list }));
-const getPost = createAction(GET_POST, post_list => ({ post_list }));
 const addPost = createAction(ADD_POST, post => ({ post }));
+const editPost = createAction(EDIT_POST, (post_id, post) => ({
+  post_id,
+  post,
+}));
 
 const initialState = {
   list: [],
@@ -29,6 +32,64 @@ const initialPost = {
   contents: "",
   comment_cnt: 0,
   insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
+};
+
+const editPostFB = (post_id = null, post = {}) => {
+  return function (dispatch, getState, { history }) {
+    if (!post_id) {
+      console.log("게시물 정보가 없어요~!!");
+      return;
+    }
+    const _image = getState().image.preview;
+
+    const _post_index = getState().post.list.findIndex(
+      item => item.id === post_id
+    );
+    const _post = getState().post.list[_post_index];
+
+    console.log(_post);
+
+    const postDB = db.collection("post");
+
+    if (_image === _post.image_url) {
+      postDB
+        .doc(post_id)
+        .update(post)
+        .then(doc => {
+          dispatch(editPost(post_id, { ...post }));
+          history.replace("/");
+        });
+
+      return;
+    } else {
+      const user_id = getState().user.user.id;
+      const _upload = storage
+        .ref(`images/${user_id}_${new Date().getTime()}`)
+        .putString(_image, "data_url");
+
+      _upload.then(snapshot => {
+        snapshot.ref
+          .getDownloadURL()
+          .then(url => {
+            console.log("url : ", url);
+            return url;
+          })
+          .then(url => {
+            postDB
+              .doc(post_id)
+              .update({ ...post, image_url: url })
+              .then(doc => {
+                dispatch(editPost(post_id, { ...post, image_url: url }));
+                history.replace("/");
+              });
+          })
+          .catch(err => {
+            window.alert("앗! 이미지 업로드에 문제 생김");
+            console.log("앗! 이미지 업로드에 문제 생김", err);
+          });
+      });
+    }
+  };
 };
 
 const addPostFB = (contents = "") => {
@@ -95,7 +156,6 @@ const getPostFB = () => {
       .then(docs => {
         let post_list = [];
         docs.forEach(doc => {
-
           //어려운 버전
           let _post = doc.data();
 
@@ -152,6 +212,17 @@ export default handleActions(
       produce(state, draft => {
         draft.list.unshift(action.payload.post); // 배열의 맨앞에 붙이기 위해 unshift를 사용함. immer 때문에 불변성 신경 안쓰고 함수사용한다...!??
       }),
+    [EDIT_POST]: (state, action) =>
+      produce(state, draft => {
+        console.log("EDIT_POST : ", state, action);
+        let index = draft.list.findIndex(
+          item => item.id === action.payload.post_id
+        );
+
+        console.log("test", action.payload);
+
+        draft.list[index] = { ...draft.list[index], ...action.payload.post };
+      }),
   },
   initialState
 );
@@ -161,6 +232,8 @@ const actionCreators = {
   setPost,
   addPost,
   addPostFB,
+  editPost,
+  editPostFB,
 };
 
 export { actionCreators };

@@ -19,7 +19,7 @@ const PostWrite = props => {
 
   let _post = is_edit ? post_list.find(item => item.id === post_id) : null;
 
-  const [contents, setContents] = React.useState(_post? _post.contents : "");
+  const [contents, setContents] = React.useState(_post ? _post.contents : "");
 
   React.useEffect(() => {
     if (is_edit && !_post) {
@@ -29,8 +29,8 @@ const PostWrite = props => {
       return;
     }
 
-    if(is_edit){
-      dispatch(imageActions.setPreview(_post.image_url))
+    if (is_edit) {
+      dispatch(imageActions.setPreview(_post.image_url));
     }
   }, []);
 
@@ -42,6 +42,11 @@ const PostWrite = props => {
     dispatch(postActions.addPostFB(contents));
     // history.push("/")
   };
+
+  const editPost = () => {
+    console.log("editPost : ", post_id, contents)
+    dispatch(postActions.editPostFB(post_id, {contents: contents}))
+  }
 
   if (!is_login) {
     return (
@@ -67,7 +72,7 @@ const PostWrite = props => {
     <React.Fragment>
       <Grid padding="20px 16px 0">
         <Text margin="0px" size="30px" bold>
-          게시글 작성
+          {is_edit ? "게시글 수정" : "게시글 작성"}
         </Text>
       </Grid>
 
@@ -93,7 +98,11 @@ const PostWrite = props => {
       </Grid>
 
       <Grid padding="16px">
-        <Button text="게시글 작성" _onClick={addPost} />
+        {is_edit ? (
+          <Button text="게시글 수정" _onClick={editPost} />
+        ) : (
+          <Button text="게시글 작성" _onClick={addPost} />
+        )}
       </Grid>
     </React.Fragment>
   );
