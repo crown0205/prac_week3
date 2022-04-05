@@ -127,20 +127,21 @@ const addPostFB = (contents = "") => {
           postDB
             .add({ ...user_info, ..._post, image_url: url })
             .then(doc => {
-              let post = { user_info, ...post, id: doc.id, image_url: url };
+              let post = { user_info, ..._post, id: doc.id, image_url: url };
               dispatch(addPost(post));
 
-              dispatch(imageAction.setPreview(null))
+              dispatch(imageAction.setPreview(null));
+              history.push("/");
             })
             .catch(err => {
-              history.push("/");
               window.alert("post 작성에 실패했어요...ㅜㅜ");
               console.log("post 작성에 실패했어요...ㅜㅜ", err);
             });
-        }).catch((err)=> {
-          window.alert("앗! 이미지 업로드에 문제 생김");
-          console.log("앗! 이미지 업로드에 문제 생김", err)
         })
+        .catch(err => {
+          window.alert("앗! 이미지 업로드에 문제 생김");
+          console.log("앗! 이미지 업로드에 문제 생김", err);
+        });
     });
 
     console.log("_upload : ", _upload);
