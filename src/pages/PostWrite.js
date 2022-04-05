@@ -6,8 +6,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { actionCreators } from "../redux/modules/post";
 
 const PostWrite = props => {
-  const is_login = useSelector(state => state.user.is_login);
   const dispatch = useDispatch();
+  const is_login = useSelector(state => state.user.is_login);
+  const preview = useSelector(state => state.image.preview);
+
   const { history } = props;
 
   const [contents, setContents] = React.useState("");
@@ -55,7 +57,7 @@ const PostWrite = props => {
           <Text>미리보기</Text>
         </Grid>
 
-        <Image shape="rectangle" />
+        <Image shape="rectangle" src={preview ? preview : "https://via.placeholder.com/400x300"} />
       </Grid>
 
       <Grid padding="16px">
