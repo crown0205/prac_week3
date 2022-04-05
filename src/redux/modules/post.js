@@ -8,17 +8,21 @@ import { actionCreators as imageAction } from "./image";
 const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
 const EDIT_POST = "EDIT_POST";
+const LOADING = "LOADING";  
 
-const setPost = createAction(SET_POST, post_list => ({ post_list }));
+const setPost = createAction(SET_POST, (post_list, paging) => ({ post_list, paging }));
 const addPost = createAction(ADD_POST, post => ({ post }));
 const editPost = createAction(EDIT_POST, (post_id, post) => ({
   post_id,
   post,
 }));
+const loading = createAction(LOADING, is_loading => ({ is_loading })); // loading 중인지 체크 하기 위해서.
 
 const initialState = {
   list: [],
-};
+  paging: { start: null, next: null, size: 3 }, //시작점을 정해주고 다음 가져올 정보를 담아준다. size는 몇개를 가져올건지 정하는건다.
+  is_loading: false, // 현재 paging 중인지 아닌지 판별하는 것.
+};    // 초기값으로 넣어 놔 버렸네;;; ㅡㅡ
 
 const initialPost = {
   // id: 0,
@@ -148,40 +152,70 @@ const addPostFB = (contents = "") => {
     console.log("addPostFB 데이더 저장중!!!!");
   };
 };
-
-const getPostFB = () => {
+                                    // ⬇ 무한스크롤할때 가져올 갯수.
+const getPostFB = (start = null, size = 3) => {
   return function (dispatch, getState, { history }) {
+    
+    let _paging = getState().post.paging; // 📍값을 가져오는데... 값이 무엇인지 정확히 알수 없다... 이럴때 어떻게 하면서 작업을 해야되는지... 
+
+    if(_paging.start && !_paging.next){   // start의 값이 있으면서 next의 값이 없으면 그냥 작동하지마...
+      return;                             // next === 마지막 item의 다음 값이 없는걸 이야기함.
+    }
+    
+    dispatch(loading(true)); // 함수가 실행 되자 마자 바로 바꿔줘도 되고, 아니면  " query = postDB.orderBy("insert_dt","desc").limit(4); " 이 밑에서 해줘도 된다.
+
     const postDB = db.collection("post");
-                                                      // "orderBy" 사용
-    // let query = postDB.orderBy("insert_dt").limit(2); // 이렇게 해주면 db에서 갯수를 제한하여 가져오는 방법이다.
-                                // ⬆ 이 요소를 기준으로 정렬을 할수있다.
-    let query = postDB.orderBy("insert_dt","desc").limit(2);
 
-    query.get().then(docs => {
-      let post_list = [];
-      docs.forEach(doc => {
-        //어려운 버전
-        let _post = doc.data();
+    let query = postDB.orderBy("insert_dt", "desc");
+    // limit(4)에서 "4"인 이유는 위에 size라는 값으로 불러올때 3개씩 불러오라고 할껀데, 여기서 4개씩 불러들이면 list의 마지막에 다았을때 item이 있는지 없는지 유무를 체크 할수 있어서이다.
 
-        // ['comment_cnt', 'contents', ...]
-        let post = Object.keys(_post).reduce(
-          (acc, cur) => {
-            if (cur.indexOf("user_") !== -1) {
-              return {
-                ...acc,
-                user_info: { ...acc.user_info, [cur]: _post[cur] },
-              };
-            }
-            return { ...acc, [cur]: _post[cur] };
-          },
-          { id: doc.id, user_info: {} }
-        );
+    if (start) {// 불러올 처음 값이 있다면 그 처음 값부터 시작하라고 지정해주는 거다.
+    
+      // query.startAt(start); // query에다가 query를 대치 해줘야되는데, 그렇게 안해줘서 같은게 계속 반복되서 출력되므로써, 같은 key를 가진 다는 에러가 발생!!!
+      query = query.startAt(start);
+    }
 
-        post_list.push(post);
+    query
+      .limit(size + 1) // limit은 여기 써줘야됨.
+      .get()
+      .then(docs => {
+        let post_list = [];
+
+        let paging = {// 다음 정보를 가져오기 전에 있는지 체크 유무하기.
+          start: docs.docs[0],
+          next:
+            docs.docs.length === size + 1
+              ? docs.docs[docs.docs.length - 1] // 이 부분 이해가 잘안된다... length에서 -1을 했는데 4번째??
+              : null,
+          size: size,
+        };
+
+        docs.forEach(doc => {
+          //어려운 버전
+          let _post = doc.data();
+
+          // ['comment_cnt', 'contents', ...]
+          let post = Object.keys(_post).reduce(
+            (acc, cur) => {
+              if (cur.indexOf("user_") !== -1) {
+                return {
+                  ...acc,
+                  user_info: { ...acc.user_info, [cur]: _post[cur] },
+                };
+              }
+              return { ...acc, [cur]: _post[cur] };
+            },
+            { id: doc.id, user_info: {} }
+          );
+
+          post_list.push(post);
+        });
+
+        post_list.pop(); // 마지막 들어가는 요소를 없애주는 거다. 여기서는 4번째로 들어가는 요소를 없애주는거다.
+                         // size + 1 로 4개씩 불러서 다음 요소가 있는지 체크 하는거닌깐.. 마지막 요소를 로딩해주지 않게 pop()으로 제거한다.
+
+        dispatch(setPost(post_list, paging));
       });
-
-      dispatch(setPost(post_list));
-    });
 
     return;
 
@@ -238,11 +272,15 @@ export default handleActions(
   {
     [SET_POST]: (state, action) =>
       produce(state, draft => {
-        draft.list = action.payload.post_list;
+        // draft.list = action.payload.post_list;// 지금은 post를 추가해주는게 아니라 바꿔 끼워주고 있는거다.
+
+        draft.list.push(...action.payload.post_list) // "...action.payload.post_list" 에서 "..." 해줘야지 하나하나씩 다 들어간다.
+        draft.paging = action.payload.paging; // paging 하는 중인지 체크?? 값 체크해보기!!
+        draft.is_loading = false; // paging 이 실행이 끝나니 작동상태를 false로 바꿔서 다시 이벤트가 일어날수 있게 해준다.
       }),
     [ADD_POST]: (state, action) =>
       produce(state, draft => {
-        draft.list.unshift(action.payload.post); // 배열의 맨앞에 붙이기 위해 unshift를 사용함. immer 때문에 불변성 신경 안쓰고 함수사용한다...!??
+        draft.list.unshift(action.payload.post);
       }),
     [EDIT_POST]: (state, action) =>
       produce(state, draft => {
@@ -254,6 +292,10 @@ export default handleActions(
         console.log("test", action.payload);
 
         draft.list[index] = { ...draft.list[index], ...action.payload.post };
+      }),
+    [LOADING]: (state, action) =>
+      produce(state, draft => {
+        draft.is_loading = action.payload.is_loading;
       }),
   },
   initialState
