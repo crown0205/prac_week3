@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Text, Grid } from "./index";
 
 const Input = props => {
-  const { width, height, _onChange, type, placeholder, label } = props;
+  const { width, height, _onChange, type, placeholder, label, value } = props;
 
   const styles = {
     height: height,
@@ -17,6 +17,7 @@ const Input = props => {
         <Label>{label}</Label>
         <InputBox
           type={type}
+          value={value}
           placeholder={placeholder}
           onChange={_onChange}
           {...styles}
@@ -33,6 +34,7 @@ Input.defaultProps = {
   height: "45px",
   // padding: "18px 16px",
   margin: false,
+  value:false,
 };
 
 const Label = styled.label`

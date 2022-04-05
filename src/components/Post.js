@@ -1,5 +1,8 @@
+import { push } from "connected-react-router";
 import React from "react";
-import { Grid, Image, Text } from "../elements/index";
+import { Grid, Image, Text, Button } from "../elements/index";
+
+import { history } from "../redux/configureStore";
 
 const Post = props => {
   return (
@@ -7,9 +10,16 @@ const Post = props => {
       <Grid padding="16px">
         <Grid border2 padding="16px">
           <Grid is_flex width="auto" border1 padding="10px">
-            <Image shape="circle" src={props.user_info.user_profile} />
-            <Text bold>{props.user_info.user_name}</Text>
-            <Text>{props.insert_dt}</Text>
+            <Grid is_flex width="auto">
+              <Image shape="circle" src={props.user_info.user_profile} />
+              <Text bold margin="10px">{props.user_info.user_name}</Text>
+            </Grid>
+            <Grid is_flex width="auto">
+              <Text>{props.insert_dt}</Text>
+              {props.is_me && (<Button width="auto" padding="6px" margin="4px" _onClick={()=>{
+                history.push(`/write/${props.id}`)
+              }} >수정</Button>)}
+            </Grid>
           </Grid>
           <Grid margin="16px 0 0 0">
             <Image shape="rectangle" src={props.image_url} />
