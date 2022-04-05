@@ -2,7 +2,8 @@ import { produce } from "immer";
 import { createAction, handleActions } from "redux-actions";
 import moment from "moment";
 
-import { db } from "../../shared/firebase";
+import { db, storage } from "../../shared/firebase";
+import { actionCreators as imageAction } from "./image";
 
 const SET_POST = "SET_POST";
 const GET_POST = "GET_POST";
@@ -47,18 +48,42 @@ const addPostFB = (contents = "") => {
       insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
     };
 
-    console.log("addPostFB 데이더 저장중!!!!");
+    const _image = getState().image.preview;
+    console.log(typeof _image);
 
-    postDB
-      .add({ ...user_info, ..._post })
-      .then(doc => {
-        let post = { user_info, ...post, id: doc.id };
-        dispatch(addPost(post));
-      })
-      .catch(err => {
-        history.push("/");
-        console.log("post 작성에 실패했어요...ㅜㅜ", err);
-      });
+    const _upload = storage
+      .ref(`images/${user_info.user_id}_${new Date().getTime()}`)
+      .putString(_image, "data_url");
+
+    _upload.then(snapshot => {
+      snapshot.ref
+        .getDownloadURL()
+        .then(url => {
+          console.log("url : ", url);
+          return url;
+        })
+        .then(url => {
+          postDB
+            .add({ ...user_info, ..._post, image_url: url })
+            .then(doc => {
+              let post = { user_info, ...post, id: doc.id, image_url: url };
+              dispatch(addPost(post));
+
+              dispatch(imageAction.setPreview(null))
+            })
+            .catch(err => {
+              history.push("/");
+              window.alert("post 작성에 실패했어요...ㅜㅜ");
+              console.log("post 작성에 실패했어요...ㅜㅜ", err);
+            });
+        }).catch((err)=> {
+          window.alert("앗! 이미지 업로드에 문제 생김");
+          console.log("앗! 이미지 업로드에 문제 생김", err)
+        })
+    });
+
+    console.log("_upload : ", _upload);
+    console.log("addPostFB 데이더 저장중!!!!");
   };
 };
 
