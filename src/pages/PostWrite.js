@@ -57,7 +57,10 @@ const PostWrite = props => {
           <Text>미리보기</Text>
         </Grid>
 
-        <Image shape="rectangle" src={preview ? preview : "https://via.placeholder.com/400x300"} />
+        <Image
+          shape="rectangle"
+          src={preview ? preview : "https://via.placeholder.com/400x300"}
+        />
       </Grid>
 
       <Grid padding="16px">

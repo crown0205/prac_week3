@@ -23,10 +23,6 @@ const initialState = {
   is_login: false,
 };
 
-// const user_inital = {
-//   user_name: "Noah",
-// }
-
 //middleware actions
 const loginFB = (id, pwd) => {
   return function (dispatch, getState, { history }) {

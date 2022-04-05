@@ -47,18 +47,18 @@ const addPostFB = (contents = "") => {
       insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
     };
 
-    console.log("addPostFB 데이더 저장중!!!!")
-    // return;  // 리턴을 하면 밑에 정보는 작동을 안한다.
-                                                        // 위에 id값이 없어서 .then의 doc에서 값을 가져온다.
-    postDB.add({...user_info, ..._post}).then((doc)=> { //.then 하고 들어오는 정보에는 doc 정보에는 추가된 게시물 정보에는 id가 들어온다!!
+    console.log("addPostFB 데이더 저장중!!!!");
 
-      let post = {user_info, ...post, id:doc.id};
-      dispatch(addPost(post));
-    })
-    .catch((err)=>{
-      history.push("/");
-      console.log("post 작성에 실패했어요...ㅜㅜ", err);
-    })
+    postDB
+      .add({ ...user_info, ..._post })
+      .then(doc => {
+        let post = { user_info, ...post, id: doc.id };
+        dispatch(addPost(post));
+      })
+      .catch(err => {
+        history.push("/");
+        console.log("post 작성에 실패했어요...ㅜㅜ", err);
+      });
   };
 };
 
@@ -126,9 +126,10 @@ export default handleActions(
       produce(state, draft => {
         draft.list = action.payload.post_list;
       }),
-    [ADD_POST]: (state, action) => produce(state, draft => {
-      draft.list.unshift(action.payload.post) // 배열의 맨앞에 붙이기 위해 unshift를 사용함. immer 때문에 불변성 신경 안쓰고 함수사용한다...!??
-    }),
+    [ADD_POST]: (state, action) =>
+      produce(state, draft => {
+        draft.list.unshift(action.payload.post); // 배열의 맨앞에 붙이기 위해 unshift를 사용함. immer 때문에 불변성 신경 안쓰고 함수사용한다...!??
+      }),
   },
   initialState
 );
