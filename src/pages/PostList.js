@@ -1,9 +1,10 @@
 // PostList.js
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { actionCreators as postActions } from "../redux/modules/post";
 
 import Post from "../components/Post";
-import { actionCreators as postActions } from "../redux/modules/post";
+import { Grid } from "../elements";
 import InfinityScroll from "../shared/InfinityScroll";
 
 const PostList = props => {
@@ -13,15 +14,7 @@ const PostList = props => {
   const is_loading = useSelector(state => state.post.is_loading);
   const paging = useSelector(state => state.post.paging);
 
-  // ⬆ 📍 같은 post에서 불러오는 값인데 이럴때 어떻게 한번에 묶어서 불러오는지??
-
-  // const { post_list, is_loading, paging } = useSelector(state=>state.post)
-
-  // console.log('-----------------------------')
-  // console.log(post_list)
-  // console.log(is_loading)
-  // console.log(paging)
-  // console.log('-----------------------------')
+  const { history } = props;
 
   React.useEffect(() => {
     if (post_list.length === 0) {
@@ -31,19 +24,37 @@ const PostList = props => {
 
   return (
     <React.Fragment>
-      <InfinityScroll  // 무한 스크롤 적용하기
-        callNext= {()=>{
-          dispatch(postActions.getPostFB(paging.next)) // 다음항목들 불러오는 함수
-          console.log("next!")
+      <InfinityScroll
+        callNext={() => {
+          dispatch(postActions.getPostFB(paging.next));
+          console.log("next!");
         }}
-        is_next={paging.next? true : false}
+        is_next={paging.next ? true : false}
         loading={is_loading}
-        >  
+      >
         {post_list.map((postItem, index) => {
           if (postItem.user_info.user_id === user_info?.uid) {
-            return <Post key={postItem.id} {...postItem} is_me />;
+            return (
+              <Grid
+                key={postItem.id}
+                _onClick={() => {
+                  history.push(`/post/${postItem.id}`);
+                }}
+              >
+                <Post {...postItem} is_me />
+              </Grid>
+            );
           } else {
-            return <Post key={postItem.id} {...postItem} />;
+            return (
+              <Grid
+                key={postItem.id}
+                _onClick={() => {
+                  history.push(`/post/${postItem.id}`);
+                }}
+              >
+                <Post {...postItem} />
+              </Grid>
+            );
           }
         })}
       </InfinityScroll>

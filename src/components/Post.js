@@ -1,4 +1,3 @@
-import { push } from "connected-react-router";
 import React from "react";
 import { Grid, Image, Text, Button } from "../elements/index";
 
