@@ -24,40 +24,47 @@ const PostList = props => {
 
   return (
     <React.Fragment>
-      <InfinityScroll
-        callNext={() => {
-          dispatch(postActions.getPostFB(paging.next));
-          console.log("next!");
-        }}
-        is_next={paging.next ? true : false}
-        loading={is_loading}
+      <Grid
+      // bg={"#eff6ff"}
+      padding="40px 0 20px 0"
       >
-        {post_list.map((postItem, index) => {
-          if (postItem.user_info.user_id === user_info?.uid) {
-            return (
-              <Grid
-                key={postItem.id}
-                _onClick={() => {
-                  history.push(`/post/${postItem.id}`);
-                }}
-              >
-                <Post {...postItem} is_me />
-              </Grid>
-            );
-          } else {
-            return (
-              <Grid
-                key={postItem.id}
-                _onClick={() => {
-                  history.push(`/post/${postItem.id}`);
-                }}
-              >
-                <Post {...postItem} />
-              </Grid>
-            );
-          }
-        })}
-      </InfinityScroll>
+        <InfinityScroll
+          callNext={() => {
+            dispatch(postActions.getPostFB(paging.next));
+            console.log("next!");
+          }}
+          is_next={paging.next ? true : false}
+          loading={is_loading}
+        >
+          {post_list.map((postItem, index) => {
+            if (postItem.user_info.user_id === user_info?.uid) { // is_me <== user_info로 판별함.
+              return (
+                <Grid
+                  // bg={"#fff"}
+                  key={postItem.id}
+                  _onClick={() => {
+                    history.push(`/post/${postItem.id}`);
+                  }}
+                >
+                  <Post {...postItem} is_me />
+                </Grid>
+              );
+            } else {
+              return (
+                <Grid
+                  // bg={"#fff"}
+                  key={postItem.id}
+                  _onClick={() => {
+                    history.push(`/post/${postItem.id}`);
+                  }}
+                >
+                  <Post {...postItem} />
+                </Grid>
+              );
+            }
+          })}
+        </InfinityScroll>
+      </Grid>
     </React.Fragment>
   );
 };
