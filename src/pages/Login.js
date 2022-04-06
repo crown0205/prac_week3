@@ -31,6 +31,7 @@ const Login = props => {
             label="아이디"
             placeholder="아이디를 입력해주세요."
             height="40px"
+            value={id}
             _onChange={e => {
               setId(e.target.value);
             }}
@@ -43,6 +44,7 @@ const Login = props => {
             type="password"
             placeholder="패스워드 입력해주세요."
             height="40px"
+            value={pwd}
             _onChange={e => {
               setPwd(e.target.value);
             }}

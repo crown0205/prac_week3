@@ -43,7 +43,7 @@ const loginFB = (id, pwd) => {
             })
           );
 
-          history.push("/");
+          history.replace("/");
         })
         .catch(error => {
           var errorCode = error.code;

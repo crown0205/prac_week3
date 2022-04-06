@@ -9,6 +9,7 @@ const Input = props => {
   const styles = {
     height: height,
     width: width,
+    
   };
 
   return (
@@ -17,11 +18,12 @@ const Input = props => {
         <Label>{label}</Label>
         <InputBox
           type={type}
-          value={value}
+          value={value ? value : ""}
           placeholder={placeholder}
           onChange={_onChange}
           {...styles}
         ></InputBox>
+        {/* <ElInput type={type} placeholder={placeholder} onChange={_onChange} /> */}
       </Grid>
     </>
   );
@@ -32,9 +34,8 @@ Input.defaultProps = {
   type: "text",
   _onChange: () => {},
   height: "45px",
-  // padding: "18px 16px",
   margin: false,
-  value:false,
+  value: "",
 };
 
 const Label = styled.label`
@@ -42,11 +43,17 @@ const Label = styled.label`
 `;
 
 const InputBox = styled.input`
-  display: inline-block;
   width: ${props => (props.width ? props.width : "100%")};
   margin: auto;
   height: ${props => props.height};
   font-size: 16px;
 `;
+
+// const ElInput = styled.input`	
+// border: 1px solid #212121;	
+// width: 100%;	
+// padding: 12px 4px;	
+// box-sizing: border-box;	
+// `
 
 export default Input;
