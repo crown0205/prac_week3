@@ -8,9 +8,12 @@ import { actionCreators as imageAction } from "./image";
 const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
 const EDIT_POST = "EDIT_POST";
-const LOADING = "LOADING";  
+const LOADING = "LOADING";
 
-const setPost = createAction(SET_POST, (post_list, paging) => ({ post_list, paging }));
+const setPost = createAction(SET_POST, (post_list, paging) => ({
+  post_list,
+  paging,
+}));
 const addPost = createAction(ADD_POST, post => ({ post }));
 const editPost = createAction(EDIT_POST, (post_id, post) => ({
   post_id,
@@ -20,9 +23,9 @@ const loading = createAction(LOADING, is_loading => ({ is_loading })); // loadin
 
 const initialState = {
   list: [],
-  paging: { start: null, next: null, size: 3 }, //시작점을 정해주고 다음 가져올 정보를 담아준다. size는 몇개를 가져올건지 정하는건다.
-  is_loading: false, // 현재 paging 중인지 아닌지 판별하는 것.
-};    // 초기값으로 넣어 놔 버렸네;;; ㅡㅡ
+  paging: { start: null, next: null, size: 3 },
+  is_loading: false,
+};
 
 const initialPost = {
   // id: 0,
@@ -45,14 +48,12 @@ const editPostFB = (post_id = null, post = {}) => {
       return;
     }
     const _image = getState().image.preview;
-
     const _post_index = getState().post.list.findIndex(
       item => item.id === post_id
     );
     const _post = getState().post.list[_post_index];
 
-    console.log(_post);
-
+    // console.log(_post);
     const postDB = db.collection("post");
 
     if (_image === _post.image_url) {
@@ -133,7 +134,6 @@ const addPostFB = (contents = "") => {
             .then(doc => {
               let post = { user_info, ..._post, id: doc.id, image_url: url };
               dispatch(addPost(post));
-
               dispatch(imageAction.setPreview(null));
               history.push("/");
             })
@@ -152,49 +152,39 @@ const addPostFB = (contents = "") => {
     console.log("addPostFB 데이더 저장중!!!!");
   };
 };
-                                    // ⬇ 무한스크롤할때 가져올 갯수.
+
 const getPostFB = (start = null, size = 3) => {
   return function (dispatch, getState, { history }) {
-    
-    let _paging = getState().post.paging; // 📍값을 가져오는데... 값이 무엇인지 정확히 알수 없다... 이럴때 어떻게 하면서 작업을 해야되는지... 
+    let _paging = getState().post.paging;
 
-    if(_paging.start && !_paging.next){   // start의 값이 있으면서 next의 값이 없으면 그냥 작동하지마...
-      return;                             // next === 마지막 item의 다음 값이 없는걸 이야기함.
+    if (_paging.start && !_paging.next) {
+      return;
     }
-    
-    dispatch(loading(true)); // 함수가 실행 되자 마자 바로 바꿔줘도 되고, 아니면  " query = postDB.orderBy("insert_dt","desc").limit(4); " 이 밑에서 해줘도 된다.
 
+    dispatch(loading(true));
     const postDB = db.collection("post");
 
     let query = postDB.orderBy("insert_dt", "desc");
-    // limit(4)에서 "4"인 이유는 위에 size라는 값으로 불러올때 3개씩 불러오라고 할껀데, 여기서 4개씩 불러들이면 list의 마지막에 다았을때 item이 있는지 없는지 유무를 체크 할수 있어서이다.
-
-    if (start) {// 불러올 처음 값이 있다면 그 처음 값부터 시작하라고 지정해주는 거다.
-    
-      // query.startAt(start); // query에다가 query를 대치 해줘야되는데, 그렇게 안해줘서 같은게 계속 반복되서 출력되므로써, 같은 key를 가진 다는 에러가 발생!!!
+    if (start) {
       query = query.startAt(start);
     }
 
     query
-      .limit(size + 1) // limit은 여기 써줘야됨.
+      .limit(size + 1)
       .get()
       .then(docs => {
         let post_list = [];
-
-        let paging = {// 다음 정보를 가져오기 전에 있는지 체크 유무하기.
+        let paging = {
           start: docs.docs[0],
           next:
             docs.docs.length === size + 1
-              ? docs.docs[docs.docs.length - 1] // 이 부분 이해가 잘안된다... length에서 -1을 했는데 4번째??
+              ? docs.docs[docs.docs.length - 1]
               : null,
           size: size,
         };
 
         docs.forEach(doc => {
-          //어려운 버전
           let _post = doc.data();
-
-          // ['comment_cnt', 'contents', ...]
           let post = Object.keys(_post).reduce(
             (acc, cur) => {
               if (cur.indexOf("user_") !== -1) {
@@ -211,21 +201,23 @@ const getPostFB = (start = null, size = 3) => {
           post_list.push(post);
         });
 
-        post_list.pop(); // 마지막 들어가는 요소를 없애주는 거다. 여기서는 4번째로 들어가는 요소를 없애주는거다.
-                         // size + 1 로 4개씩 불러서 다음 요소가 있는지 체크 하는거닌깐.. 마지막 요소를 로딩해주지 않게 pop()으로 제거한다.
-
+        post_list.pop();
         dispatch(setPost(post_list, paging));
       });
+  };
+};
 
-    return;
+const getOnePostFB = id => {
+  return function (dispatch, getState, { history }) {
+    const postDB = db.collection("post");
+    postDB
+      .doc(id)
+      .get()
+      .then(doc => {
+        // console.log(doc);
+        // console.log(doc.data());
 
-    postDB.get().then(docs => {
-      let post_list = [];
-      docs.forEach(doc => {
-        //어려운 버전
         let _post = doc.data();
-
-        // ['comment_cnt', 'contents', ...]
         let post = Object.keys(_post).reduce(
           (acc, cur) => {
             if (cur.indexOf("user_") !== -1) {
@@ -239,31 +231,8 @@ const getPostFB = (start = null, size = 3) => {
           { id: doc.id, user_info: {} }
         );
 
-        post_list.push(post);
-
-        // 쉬운버전
-        // let _post = {
-        //   id: doc.id,
-        //   ...doc.data(),
-        // };
-
-        // let post = {
-        //   id: doc.id,
-        //   user_info: {
-        //     user_name: _post.user_name,
-        //     user_profile: _post.user_profile,
-        //   },
-        //   image_url: _post.image_url,
-        //   contents: _post.contents,
-        //   comment_cnt: _post.comment_cnt,
-        //   insert_dt: _post.insert_dt,
-        // };
-
-        // post_list.push(post);
+          dispatch(setPost([post])) // 이 앞에다가 대괄호 하면 배열 안에다가 넣는거다.
       });
-
-      dispatch(setPost(post_list));
-    });
   };
 };
 
@@ -272,11 +241,30 @@ export default handleActions(
   {
     [SET_POST]: (state, action) =>
       produce(state, draft => {
-        // draft.list = action.payload.post_list;// 지금은 post를 추가해주는게 아니라 바꿔 끼워주고 있는거다.
+        draft.list.push(...action.payload.post_list);
 
-        draft.list.push(...action.payload.post_list) // "...action.payload.post_list" 에서 "..." 해줘야지 하나하나씩 다 들어간다.
-        draft.paging = action.payload.paging; // paging 하는 중인지 체크?? 값 체크해보기!!
-        draft.is_loading = false; // paging 이 실행이 끝나니 작동상태를 false로 바꿔서 다시 이벤트가 일어날수 있게 해준다.
+        // 중복값 제거 하는 로직
+        draft.list = draft.list.reduce((acc, cur) => { 
+          console.log({acc,cur})
+          console.log(acc.findIndex(item => item.id === cur.id))
+          if(acc.findIndex(item => item.id === cur.id) === -1){ // findIndex 값이 "-1"이 나오면 중복되는 값이 없다는 소리이다.
+            // 중복 되지 않은 경우
+            console.log("중복 x")
+                                  // "⬆" 이게 지금 현재 가지고 있는 포스트의 "id"이다. post.id와 현재의 가지고 있는 id와 같은지를 체크하는 로직
+            return [...acc, cur]
+          } else { 
+            // 중복된 경우
+            console.log("중복 ㅇ")
+            acc[acc.findIndex(item => item.id === cur.id)] = cur;
+            return acc;
+          }
+        }, [])
+
+
+        if(action.payload.paging){
+          draft.paging = action.payload.paging;
+        }
+        draft.is_loading = false;
       }),
     [ADD_POST]: (state, action) =>
       produce(state, draft => {
@@ -308,6 +296,7 @@ const actionCreators = {
   addPostFB,
   editPost,
   editPostFB,
+  getOnePostFB,
 };
 
 export { actionCreators };
